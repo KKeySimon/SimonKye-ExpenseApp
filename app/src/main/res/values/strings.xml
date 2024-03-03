@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">SimonKye-ExpenseApp</string>
+    <string name="expense_name_label">Name</string>
+    <string name="expense_name_hint">Enter a name for the expense.</string>
+    <string name="expense_amount_hint">Enter the amount for the expense.</string>
+    <string name="expense_name">Name</string>
+    <string name="expense_detail_label">Details</string>
+    <string name="expense_date">Date</string>
+    <string name="expense_amount">Amount</string>
+    <string name="expense_category">Category</string>
+    <string name="new_expense">New Expense</string>
+    <string name="category1">Food</string>
+    <string name="category2">Entertainment</string>
+    <string name="category3">Housing</string>
+    <string name="category4">Utilities</string>
+    <string name="category5">Fuel</string>
+    <string name="category6">Automotive</string>
+    <string name="category7">Misc</string>
+</resources>

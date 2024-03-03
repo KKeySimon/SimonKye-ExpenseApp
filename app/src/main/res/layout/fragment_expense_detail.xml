@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceHeadline5"
+        android:text="@string/expense_name_label" />
+    <EditText
+        android:id="@+id/expense_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/expense_name_hint"
+        android:importantForAutofill="no"
+        android:inputType="text" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceHeadline5"
+        android:text="@string/expense_detail_label" />
+    <Button
+        android:id="@+id/expense_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Wed May 11 11:56 EST 2022" />
+    <EditText
+        android:id="@+id/expense_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/expense_amount_hint"
+        android:importantForAutofill="no"
+        android:inputType="number" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+        <RadioGroup
+            android:id="@+id/expense_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RadioButton android:id="@+id/category1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category1"/>
+            <RadioButton android:id="@+id/category2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category2"/>
+            <RadioButton android:id="@+id/category3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category3"/>
+            <RadioButton android:id="@+id/category4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category4"/>
+            <RadioButton android:id="@+id/category5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category5"/>
+            <RadioButton android:id="@+id/category6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category6"/>
+            <RadioButton android:id="@+id/category7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category7"/>
+        </RadioGroup>
+    </ScrollView>
+</LinearLayout>
