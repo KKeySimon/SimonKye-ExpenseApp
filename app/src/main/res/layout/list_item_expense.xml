@@ -24,7 +24,18 @@
         android:text="Expense Date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/expense_category"/>
+        app:layout_constraintTop_toBottomOf="@id/expense_name"
+        app:layout_constraintBottom_toTopOf="@id/expense_amount"/>
+    <TextView
+        android:id="@+id/expense_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Expense Amount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/expense_date"
+        app:layout_constraintBottom_toTopOf="@id/expense_category"
+        />
     <TextView
         android:id="@+id/expense_category"
         android:layout_width="match_parent"
@@ -32,5 +43,6 @@
         android:text="Expense Category"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/expense_amount"
         app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

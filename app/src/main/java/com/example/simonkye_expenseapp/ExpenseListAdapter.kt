@@ -13,6 +13,7 @@ class ExpenseHolder (
     fun bind(expense: Expense, onExpenseClicked: (expenseId: UUID) -> Unit) {
         binding.expenseName.text = expense.name
         binding.expenseDate.text = expense.date.toString()
+        binding.expenseAmount.text = expense.amount.toString()
         binding.expenseCategory.text = expense.category
 
         binding.root.setOnClickListener {

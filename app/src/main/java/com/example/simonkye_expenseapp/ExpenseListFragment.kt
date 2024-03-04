@@ -20,7 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simonkye_expenseapp.databinding.FragmentExpenseListBinding
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 private const val TAG = "ExpenseListFragment"
@@ -49,10 +52,19 @@ class ExpenseListFragment : Fragment() {
 
     private fun showNewExpense() {
         viewLifecycleOwner.lifecycleScope.launch {
+            val calendar = Calendar.getInstance().apply {
+                // Reset hour, minutes, seconds and millis to get the start of the day
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val startOfDay = calendar.time
+
             val newExpense = Expense(
                 id = UUID.randomUUID(),
                 name = "",
-                date = Date(),
+                date = startOfDay,
                 amount = 0,
                 category = ""
             )
@@ -84,16 +96,25 @@ class ExpenseListFragment : Fragment() {
         binding.categories.setOnCheckedChangeListener { group, checkedId ->
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val radioButtonText = radioButton?.text.toString()
-            val dateButtonText = binding.expenseDate.toString()
+            val dateButtonText = binding.expenseDate.text.toString()
             viewLifecycleOwner.lifecycleScope.launch {
-//                if (dateButtonText == getString(R.string.no_date_filter)) {
-//
-//                }
-                if (radioButtonText == "All") {
-                    expenseListViewModel.loadExpense()
+                if (dateButtonText == getString(R.string.no_date_filter)) {
+                    if (radioButtonText == "All") {
+                        expenseListViewModel.loadExpense()
+                    } else {
+                        expenseListViewModel.loadExpenses(radioButtonText)
+                    }
                 } else {
-                    expenseListViewModel.loadExpenses(radioButtonText)
+                    val dateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US)
+                    val date = dateFormat.parse(dateButtonText)
+                    if (radioButtonText == "All") {
+                        expenseListViewModel.loadExpenses(date!!)
+                    } else {
+                        expenseListViewModel.loadExpenses(date!!, radioButtonText)
+                    }
+
                 }
+
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -120,7 +141,12 @@ class ExpenseListFragment : Fragment() {
                             expenseDate.text = newDate.toString()
                         }
                         viewLifecycleOwner.lifecycleScope.launch {
-                            expenseListViewModel.loadExpenses(newDate)
+                            val checkedButtonId = binding.categories.checkedRadioButtonId
+                            val checkedRadioButton = binding.root.findViewById<RadioButton>(checkedButtonId)
+                            when (checkedButtonId) {
+                                R.id.all_categories -> expenseListViewModel.loadExpenses(newDate)
+                                else -> expenseListViewModel.loadExpenses(newDate, checkedRadioButton.text.toString())
+                            }
                         }
                     }
                 }
