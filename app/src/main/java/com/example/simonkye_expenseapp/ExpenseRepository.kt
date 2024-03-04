@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.util.Date
 import java.util.UUID
 
 private const val DATABASE_NAME = "expense-database"
@@ -26,8 +27,13 @@ class ExpenseRepository private constructor(
 
     suspend fun getExpense(id: UUID) : Expense = database.expenseDao().getExpense(id)
 
-    suspend fun getExpenseByCategory(category: String) : Flow<List<Expense>>
+    fun getExpenseByCategory(category: String) : Flow<List<Expense>>
         = database.expenseDao().getExpense(category)
+
+    fun getExpenseByDate(date: Date) : Flow<List<Expense>>
+        = database.expenseDao().getExpense(date)
+    fun getExpenseByDateAndCategory(date: Date, category: String) : Flow<List<Expense>>
+            = database.expenseDao().getExpense(date, category)
 
     fun updateExpense(expense: Expense) {
         coroutineScope.launch {

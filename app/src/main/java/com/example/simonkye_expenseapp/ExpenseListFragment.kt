@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -76,16 +77,23 @@ class ExpenseListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        savedInstanceState?.let {
+            val selectedDate = it.getString("date", "No Date Selected")
+            binding.expenseDate.text = selectedDate
+        }
         binding.categories.setOnCheckedChangeListener { group, checkedId ->
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val radioButtonText = radioButton?.text.toString()
+            val dateButtonText = binding.expenseDate.toString()
             viewLifecycleOwner.lifecycleScope.launch {
+//                if (dateButtonText == getString(R.string.no_date_filter)) {
+//
+//                }
                 if (radioButtonText == "All") {
                     expenseListViewModel.loadExpense()
                 } else {
                     expenseListViewModel.loadExpenses(radioButtonText)
                 }
-
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -97,11 +105,37 @@ class ExpenseListFragment : Fragment() {
                                 ExpenseListFragmentDirections.showExpenseDetail(expenseId)
                             )
                         }
+                    binding.apply {
+                        expenseDate.setOnClickListener {
+                            findNavController().navigate(
+                                ExpenseListFragmentDirections.filterDate(Date())
+                            )
+                        }
+                    }
+                    setFragmentResultListener(
+                        DatePickerFragment.REQUEST_KEY_DATE
+                    ) { requestKey, bundle ->
+                        val newDate = bundle.getSerializable(DatePickerFragment.BUNDLE_KEY_DATE) as Date
+                        binding.apply {
+                            expenseDate.text = newDate.toString()
+                        }
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            expenseListViewModel.loadExpenses(newDate)
+                        }
+                    }
                 }
             }
         }
+
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (_binding != null) {
+            outState.putString("date", binding.expenseDate.text.toString())
+        }
+
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
