@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -75,6 +76,18 @@ class ExpenseListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.categories.setOnCheckedChangeListener { group, checkedId ->
+            val radioButton = view.findViewById<RadioButton>(checkedId)
+            val radioButtonText = radioButton?.text.toString()
+            viewLifecycleOwner.lifecycleScope.launch {
+                if (radioButtonText == "All") {
+                    expenseListViewModel.loadExpense()
+                } else {
+                    expenseListViewModel.loadExpenses(radioButtonText)
+                }
+
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 expenseListViewModel.expenses.collect { expenses ->

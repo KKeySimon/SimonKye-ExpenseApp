@@ -26,6 +26,9 @@ class ExpenseRepository private constructor(
 
     suspend fun getExpense(id: UUID) : Expense = database.expenseDao().getExpense(id)
 
+    suspend fun getExpenseByCategory(category: String) : Flow<List<Expense>>
+        = database.expenseDao().getExpense(category)
+
     fun updateExpense(expense: Expense) {
         coroutineScope.launch {
             database.expenseDao().updateExpense(expense)

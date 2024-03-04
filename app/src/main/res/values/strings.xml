@@ -3,6 +3,7 @@
     <string name="expense_name_label">Name</string>
     <string name="expense_name_hint">Enter a name for the expense.</string>
     <string name="expense_amount_hint">Enter the amount for the expense.</string>
+    <string name="all_categories">All</string>
     <string name="expense_name">Name</string>
     <string name="expense_detail_label">Details</string>
     <string name="expense_date">Date</string>

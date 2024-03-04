@@ -73,7 +73,6 @@ class ExpenseDetailFragment : Fragment() {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 expenseDetailViewModel.expense.collect { expense ->
                     expense?.let { updateUi(it) }
-
                 }
             }
         }

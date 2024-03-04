@@ -3,11 +3,13 @@ package com.example.simonkye_expenseapp
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.UUID
 private const val TAG = "ExpenseListViewModel"
@@ -29,5 +31,14 @@ class ExpenseListViewModel : ViewModel() {
     suspend fun addExpense(expense: Expense) {
         expenseRepository.addExpense(expense)
     }
-
+    suspend fun loadExpenses(category : String) {
+        expenseRepository.getExpenseByCategory(category).collect {
+            _expenses.value = it
+        }
+    }
+    suspend fun loadExpense() {
+        expenseRepository.getExpenses().collect {
+            _expenses.value = it
+        }
+    }
 }
