@@ -4,6 +4,7 @@
     <string name="expense_name_hint">Enter a name for the expense.</string>
     <string name="expense_amount_hint">Enter the amount for the expense.</string>
     <string name="all_categories">All</string>
+    <string name="reset_date_filter">Remove Date Filter</string>
     <string name="no_date_filter">No Date Selected</string>
     <string name="expense_name">Name</string>
     <string name="expense_detail_label">Details</string>

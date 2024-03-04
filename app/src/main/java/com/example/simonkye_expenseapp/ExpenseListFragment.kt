@@ -9,10 +9,12 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -53,7 +55,6 @@ class ExpenseListFragment : Fragment() {
     private fun showNewExpense() {
         viewLifecycleOwner.lifecycleScope.launch {
             val calendar = Calendar.getInstance().apply {
-                // Reset hour, minutes, seconds and millis to get the start of the day
                 set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
@@ -89,14 +90,38 @@ class ExpenseListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        savedInstanceState?.let {
-            val selectedDate = it.getString("date", "No Date Selected")
-            binding.expenseDate.text = selectedDate
-        }
+
+
+        expenseListViewModel.selectedDate.observe(viewLifecycleOwner, Observer { date ->
+            binding.expenseDate.text = date
+            val dateButtonText = binding.expenseDate.text.toString()
+            if (binding.expenseDate.text != getString(R.string.no_date_filter)) {
+
+                val dateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US)
+                val date = dateFormat.parse(dateButtonText)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    when (binding.categories.checkedRadioButtonId) {
+                        -1 -> expenseListViewModel.loadExpenses(date!!)
+                        R.id.all_categories -> expenseListViewModel.loadExpenses(date!!)
+                        else -> expenseListViewModel.loadExpenses(
+                            date!!,
+                            view.findViewById<RadioButton>(binding.categories.checkedRadioButtonId)?.text.toString()
+                        )
+                    }
+                }
+            }
+        })
+
+        expenseListViewModel.selectedCategoryId.observe(viewLifecycleOwner, Observer { categoryId ->
+            binding.categories.check(categoryId)
+        })
+
+
         binding.categories.setOnCheckedChangeListener { group, checkedId ->
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val radioButtonText = radioButton?.text.toString()
             val dateButtonText = binding.expenseDate.text.toString()
+            expenseListViewModel.setSelectedCategoryId(checkedId)
             viewLifecycleOwner.lifecycleScope.launch {
                 if (dateButtonText == getString(R.string.no_date_filter)) {
                     if (radioButtonText == "All") {
@@ -105,13 +130,19 @@ class ExpenseListFragment : Fragment() {
                         expenseListViewModel.loadExpenses(radioButtonText)
                     }
                 } else {
-                    val dateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US)
-                    val date = dateFormat.parse(dateButtonText)
-                    if (radioButtonText == "All") {
-                        expenseListViewModel.loadExpenses(date!!)
-                    } else {
-                        expenseListViewModel.loadExpenses(date!!, radioButtonText)
+                    if (binding.expenseDate.text != getString(R.string.no_date_filter)) {
+                        if (binding.expenseDate.text != getString(R.string.no_date_filter)) {
+                            val dateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US)
+                            val date = dateFormat.parse(dateButtonText)
+                            if (radioButtonText == "All") {
+                                expenseListViewModel.loadExpenses(date!!)
+                            } else {
+                                expenseListViewModel.loadExpenses(date!!, radioButtonText)
+                            }
+                        }
+
                     }
+
 
                 }
 
@@ -132,6 +163,21 @@ class ExpenseListFragment : Fragment() {
                                 ExpenseListFragmentDirections.filterDate(Date())
                             )
                         }
+                        resetDateFilter.setOnClickListener {
+                            expenseListViewModel.setSelectedDate(getString(R.string.no_date_filter))
+                            binding.expenseDate.text = getString(R.string.no_date_filter)
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                val checkedButtonId = binding.categories.checkedRadioButtonId
+                                val checkedRadioButton =
+                                    binding.root.findViewById<RadioButton>(checkedButtonId)
+                                when (checkedButtonId) {
+                                    -1 -> expenseListViewModel.loadExpense()
+                                    R.id.all_categories -> expenseListViewModel.loadExpense()
+                                    else -> expenseListViewModel.loadExpenses(checkedRadioButton.text.toString())
+                                }
+
+                            }
+                        }
                     }
                     setFragmentResultListener(
                         DatePickerFragment.REQUEST_KEY_DATE
@@ -140,11 +186,13 @@ class ExpenseListFragment : Fragment() {
                         binding.apply {
                             expenseDate.text = newDate.toString()
                         }
+                        expenseListViewModel.setSelectedDate(newDate.toString())
                         viewLifecycleOwner.lifecycleScope.launch {
                             val checkedButtonId = binding.categories.checkedRadioButtonId
                             val checkedRadioButton = binding.root.findViewById<RadioButton>(checkedButtonId)
                             when (checkedButtonId) {
                                 R.id.all_categories -> expenseListViewModel.loadExpenses(newDate)
+                                -1 -> expenseListViewModel.loadExpenses(newDate)
                                 else -> expenseListViewModel.loadExpenses(newDate, checkedRadioButton.text.toString())
                             }
                         }
@@ -155,13 +203,6 @@ class ExpenseListFragment : Fragment() {
 
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (_binding != null) {
-            outState.putString("date", binding.expenseDate.text.toString())
-        }
-
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
